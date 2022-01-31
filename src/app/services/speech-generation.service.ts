@@ -5,7 +5,8 @@ import { environment } from 'src/environments/environment';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
-    'Authorization': 'Basic ' + btoa('apikey:xggSjnYDxgoGuxorsgNl-nmDV1dy6a1u_U1TCQBpf6Hi')
+    'Authorization': 'Basic ' + btoa(environment.API_KEY),
+    'accept': 'audio/mp3'
   })
 };
 

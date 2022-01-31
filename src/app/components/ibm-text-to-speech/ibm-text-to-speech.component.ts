@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { SpeechGenerationService } from 'src/app/services/speech-generation.service';
 
 @Component({
@@ -9,9 +10,13 @@ import { SpeechGenerationService } from 'src/app/services/speech-generation.serv
 })
 export class IbmTextToSpeechComponent implements OnInit {
 
-  audioURL: string;
+  audioURL;
   textToSpeechForm: FormGroup;
   isFormSubmitted = false;
+  textToSpeechSubscription: Subscription;
+  textToConvert: string;
+  @ViewChild('output', { static: false }) outputAudio: ElementRef;
+
   constructor(private speechGenerationService: SpeechGenerationService, private formBuilder: FormBuilder) {
     this.textToSpeechForm = this.formBuilder.group({
       inputText: ['', Validators.compose([Validators.required, Validators.maxLength(50)])]
@@ -30,11 +35,13 @@ export class IbmTextToSpeechComponent implements OnInit {
   }
 
   textToSpeech() {
-    this.speechGenerationService.getSpeechForText(this.textToSpeechForm.get('inputText').value).subscribe((data) => {
+    this.textToConvert = this.textToSpeechForm.get('inputText').value;
+    this.textToSpeechSubscription = this.speechGenerationService.getSpeechForText(this.textToConvert).subscribe((data) => {
       if (data && data.byteLength) {
         this.playOutput(data);
       }
-    })
+    });
+
   }
 
   playOutput(arrayBuffer) {
@@ -56,6 +63,12 @@ export class IbmTextToSpeechComponent implements OnInit {
       }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.textToSpeechSubscription) {
+      this.textToSpeechSubscription.unsubscribe();
     }
   }
 }
