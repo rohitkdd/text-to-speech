@@ -10,7 +10,6 @@ import { SpeechGenerationService } from 'src/app/services/speech-generation.serv
 })
 export class IbmTextToSpeechComponent implements OnInit {
 
-  audioURL;
   textToSpeechForm: FormGroup;
   isFormSubmitted = false;
   textToSpeechSubscription: Subscription;
