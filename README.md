@@ -2,6 +2,8 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.2.
 
+This project converts Text to Speech, and streams output on the go, with the help of Text to Speech Service of IBM Cloud, to have a demo, please provide your API_KEY in environment variable.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
