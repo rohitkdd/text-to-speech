@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   WATSON_TEXT_TO_SPEECH_API: 'https://api.eu-gb.text-to-speech.watson.cloud.ibm.com/instances/9b0540ac-3d39-4938-8ba4-96b8e368b55c/v1/synthesize',
-  API_KEY: '<PLACE-YOUR-API-KEY-HERE>'
+  API_KEY: 'apikey:xggSjnYDxgoGuxorsgNl-nmDV1dy6a1u_U1TCQBpf6Hi'
 };
 
 /*
