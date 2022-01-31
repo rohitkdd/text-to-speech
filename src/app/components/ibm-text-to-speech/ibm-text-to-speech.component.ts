@@ -14,8 +14,7 @@ export class IbmTextToSpeechComponent implements OnInit {
   isFormSubmitted = false;
   textToSpeechSubscription: Subscription;
   textToConvert: string;
-  @ViewChild('output', { static: false }) outputAudio: ElementRef;
-
+  
   constructor(private speechGenerationService: SpeechGenerationService, private formBuilder: FormBuilder) {
     this.textToSpeechForm = this.formBuilder.group({
       inputText: ['', Validators.compose([Validators.required, Validators.maxLength(50)])]
