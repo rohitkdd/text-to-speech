@@ -17,10 +17,8 @@ export class DataExchangeService {
 
         request.onsuccess = await function (event) {
           if (event.target.result) {
-            console.log('added successfully');
             resolve('successful');
           } else {
-            console.log('something went wrong');
             resolve('failed');
           }
         }
@@ -36,10 +34,8 @@ export class DataExchangeService {
 
         request.onsuccess = await function (event) {
           if (event.target.result) {
-            console.log('retrieved successfully');
             resolve(event.target.result);
           } else {
-            console.log('something went wrong');
             resolve(false);
           }
         }
@@ -54,10 +50,24 @@ export class DataExchangeService {
 
         request.onsuccess = await function (event) {
           if (event.target.result) {
-            console.log('deleted successfully');
             resolve('successful');
           } else {
-            console.log('something went wrong');
+            resolve('failed');
+          }
+        }
+      }
+    });
+  }
+
+  getAllKeys() {
+    return new Promise(async (resolve, reject) => {
+      if (db) {
+        const request = await db.transaction([this.storageName], "readwrite").objectStore(this.storageName).getAllKeys();
+
+        request.onsuccess = await function (event) {
+          if (event.target.result) {
+            resolve(event.target.result);
+          } else {
             resolve('failed');
           }
         }

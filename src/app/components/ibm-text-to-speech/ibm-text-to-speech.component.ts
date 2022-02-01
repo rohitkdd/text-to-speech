@@ -15,6 +15,7 @@ export class IbmTextToSpeechComponent implements OnInit {
   isFormSubmitted = false;
   textToSpeechSubscription: Subscription;
   textToConvert: string;
+  convertedKeys: [];
 
   constructor(private speechGenerationService: SpeechGenerationService, private formBuilder: FormBuilder,
     private dataExchangeService: DataExchangeService) {
@@ -24,6 +25,7 @@ export class IbmTextToSpeechComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getAllKeysFromCache();
   }
 
   submitForm() {
@@ -41,24 +43,22 @@ export class IbmTextToSpeechComponent implements OnInit {
     if (textInCache) {
       this.getDataFromCache(this.textToConvert.toLowerCase());
     } else {
-      // this.getDataFromCache(textInCache);
       this.textToSpeechSubscription = this.speechGenerationService.getSpeechForText(this.textToConvert.toLowerCase()).subscribe((data) => {
         if (data && data.byteLength) {
-          console.log(data);
           localStorage.setItem(this.textToConvert.toLowerCase(), this.textToConvert);
-          this.dataExchangeService.add(this.textToConvert.toLowerCase(), data);
+          this.dataExchangeService.add(this.textToConvert.toLowerCase(), data).then((result) => {
+            if (result) {
+              this.getAllKeysFromCache();
+            }
+          });
           this.playOutput(data);
         }
       });
     }
-
-
-
   }
-  getDataFromCache(textInCache: string) {
-    this.dataExchangeService.get(this.textToConvert.toLowerCase()).then((data) => {
+  getDataFromCache(searchText: string) {
+    this.dataExchangeService.get(searchText.toLowerCase()).then((data) => {
       if (data) {
-        console.log(data);
         this.playOutput(data);
       }
     });
@@ -70,7 +70,7 @@ export class IbmTextToSpeechComponent implements OnInit {
     try {
       if (arrayBuffer.byteLength > 0) {
         audioContext.decodeAudioData(arrayBuffer,
-          function (buffer) {
+          (buffer) => {
             audioContext.resume();
             outputSource = audioContext.createBufferSource();
             outputSource.connect(audioContext.destination);
@@ -82,8 +82,20 @@ export class IbmTextToSpeechComponent implements OnInit {
           });
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
+  }
+
+  resetForm() {
+    this.textToSpeechForm.reset();
+    this.isFormSubmitted = false;
+  }
+
+  getAllKeysFromCache() {
+    this.dataExchangeService.getAllKeys().then((data: [])=> {
+      if (data && data.length)
+      this.convertedKeys = data;
+    });
   }
 
   ngOnDestroy(): void {
