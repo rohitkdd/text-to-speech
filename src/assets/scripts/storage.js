@@ -1,6 +1,6 @@
 window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-window.IDBTransaction = windo.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
 
 window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
@@ -11,19 +11,15 @@ if (!window.indexedDB) {
 let db;
 let request = window.indexedDB.open('myttsdb', 1);
 
-request.onerror = function(event) {
+request.onerror = (event) => {
 
 }
 
-request.onsuccess = function(event) {
+request.onsuccess = (event) => {
     db = request.result 
-
-    console.log("success" +db);
 }
 
-request.onupgradeneeded = function(event) {
-
-    let db;
+request.onupgradeneeded = (event) => {
+    let db = event.target.result;
     let objectStore = db.createObjectStore("TTS");
-    
 }

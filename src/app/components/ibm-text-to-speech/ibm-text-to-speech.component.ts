@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { DataExchangeService } from 'src/app/services/data-exchange.service';
 import { SpeechGenerationService } from 'src/app/services/speech-generation.service';
 
 @Component({
@@ -14,8 +15,9 @@ export class IbmTextToSpeechComponent implements OnInit {
   isFormSubmitted = false;
   textToSpeechSubscription: Subscription;
   textToConvert: string;
-  
-  constructor(private speechGenerationService: SpeechGenerationService, private formBuilder: FormBuilder) {
+
+  constructor(private speechGenerationService: SpeechGenerationService, private formBuilder: FormBuilder,
+    private dataExchangeService: DataExchangeService) {
     this.textToSpeechForm = this.formBuilder.group({
       inputText: ['', Validators.compose([Validators.required, Validators.maxLength(50)])]
     });
@@ -34,12 +36,32 @@ export class IbmTextToSpeechComponent implements OnInit {
 
   textToSpeech() {
     this.textToConvert = this.textToSpeechForm.get('inputText').value;
-    this.textToSpeechSubscription = this.speechGenerationService.getSpeechForText(this.textToConvert).subscribe((data) => {
-      if (data && data.byteLength) {
+    let textInCache = localStorage.getItem(this.textToConvert.toLowerCase());
+
+    if (textInCache) {
+      this.getDataFromCache(this.textToConvert.toLowerCase());
+    } else {
+      // this.getDataFromCache(textInCache);
+      this.textToSpeechSubscription = this.speechGenerationService.getSpeechForText(this.textToConvert.toLowerCase()).subscribe((data) => {
+        if (data && data.byteLength) {
+          console.log(data);
+          localStorage.setItem(this.textToConvert.toLowerCase(), this.textToConvert);
+          this.dataExchangeService.add(this.textToConvert.toLowerCase(), data);
+          this.playOutput(data);
+        }
+      });
+    }
+
+
+
+  }
+  getDataFromCache(textInCache: string) {
+    this.dataExchangeService.get(this.textToConvert.toLowerCase()).then((data) => {
+      if (data) {
+        console.log(data);
         this.playOutput(data);
       }
     });
-
   }
 
   playOutput(arrayBuffer) {
